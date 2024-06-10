@@ -5,23 +5,34 @@ name: Security Scan
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   tests:
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      security-events: write  # for github/codeql-action/upload-sarif to upload SARIF results
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Checkout Source
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
+        uses: securego/gosec@ac75d44f5635e83e6e91347f7350f1b3c87ee5af # master
         with:
           # Arguments for gosec, -no-fail to not fail the workflow based on findings
           args: '-no-fail -fmt sarif -out gosec-results.sarif ./...'
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@2e230e8fe0ad3a14a340ad0815ddb96d599d2aff # v3.25.8
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: gosec-results.sarif

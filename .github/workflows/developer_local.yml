@@ -3,15 +3,23 @@ name: local dev env validation
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   unit_test_mac:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4.1.1
+    - name: Harden Runner
+      uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
         persist-credentials: false
         fetch-depth: 0
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
       with:
         go-version-file: go.mod
     - name: Prepare environment 
@@ -28,7 +36,12 @@ jobs:
       matrix:
         kube_provider: [kind]
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: local cluster set up
         run: make cluster-up
       - name: local container test

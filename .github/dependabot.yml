@@ -8,3 +8,33 @@ updates:
     directory: /
     schedule:
       interval: daily
+
+  - package-ecosystem: docker
+    directory: /build
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /manifests/compose/mock-acpi/mock-acpi
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /manifests/compose/mock-acpi/turbostat
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /manifests/compose/monitoring/grafana
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /manifests/compose/monitoring/prometheus
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /vendor/github.com/jaypipes/ghw
+    schedule:
+      interval: daily
