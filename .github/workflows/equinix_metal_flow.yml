@@ -9,8 +9,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: metal-runner-action
-        uses: rootfs/metal-runner-action@main
+        uses: rootfs/metal-runner-action@41be7e4c4f6c2dfe3a78eb16a7e1f945a8e95f24 # main
         with:
           github_token: ${{ secrets.GH_SELF_HOSTED_RUNNER_TOKEN }}
           metal_auth_token: ${{ secrets.EQUINIX_API_TOKEN }}
@@ -28,6 +33,11 @@ jobs:
       runner-name: ${{ runner.name }}
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - run: |
           echo "This is runner: ${{ runner.name }}"
           echo "Running on ${{ runner.arch }} ${{ runner.os }}"
@@ -141,8 +151,13 @@ jobs:
     needs: [Install]
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: delete runner
-        uses: rootfs/metal-delete-action@main
+        uses: rootfs/metal-delete-action@def24f6d91c748cafca6f98381929db44ae4037b # main
         with:
           authToken: ${{ secrets.EQUINIX_API_TOKEN }}
           projectID: ${{ secrets.EQUINIX_PROJECT_ID }}

@@ -1,4 +1,4 @@
-FROM quay.io/sustainable_computing_io/kepler_builder:ubi-9-libbpf-1.3.0 as builder
+FROM quay.io/sustainable_computing_io/kepler_builder:ubi-9-libbpf-1.3.0@sha256:c4889995bc67296fd0af4b80c6fbeac90ae0436db39faac2386a973c7f1ace66 as builder
 ARG VERSION
 ARG INSTALL_HABANA=false
 WORKDIR /workspace
@@ -15,7 +15,7 @@ RUN if [[ "$INSTALL_HABANA" == "true" ]]; then \
 
 RUN make build VERSION=${VERSION}
 
-FROM registry.access.redhat.com/ubi9:latest
+FROM registry.access.redhat.com/ubi9:latest@sha256:d31d3e5e92c0c47277c5011c0326b285ab7ae627eff036133be1dccc4208004d
 # NOTE: use bash instead of sh
 SHELL ["/bin/bash", "-c"]
 

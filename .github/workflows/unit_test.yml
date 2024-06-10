@@ -15,11 +15,16 @@ jobs:
   unit_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           go-version-file: go.mod
       - name: Get ginkgo
@@ -33,7 +38,7 @@ jobs:
           cd doc/ && sudo ./dev/prepare_dev_env.sh && cd - 
           git config --global --add safe.directory /kepler
       - name: install libbpf
-        uses: sustainable-computing-io/kepler-action@v0.0.6
+        uses: sustainable-computing-io/kepler-action@ce619a32f97caaf2fa22329e2cb5e0afc1760178 # v0.0.6
         with:
           ebpfprovider: libbpf
       - name: Run
@@ -50,12 +55,12 @@ jobs:
           make VERBOSE=1 test
           go tool cover -func=coverage.out -o=coverage.out
       - name: Go Coverage Badge # Pass the `coverage.out` output to this action
-        uses: tj-actions/coverage-badge-go@v2
+        uses: tj-actions/coverage-badge-go@84540b9f82b4f569ac9f248cf6f2893ac3cc4791 # v2.4.2
         with:
           filename: coverage.out
 
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@v19
+        uses: tj-actions/verify-changed-files@d774a4c7ebe335445d79c7b44138f56a76058ba0 # v19.0.0
         id: verify-changed-files
         with:
           files: README.md
@@ -70,7 +75,7 @@ jobs:
 
       - name: Push changes
         if: github.event_name != 'pull_request' && steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@9870d48124da805820c70ebc6ba563c715551019 # master
         with:
           github_token: ${{ secrets.GH_BOT_SECRET }}
           branch: ${{ github.head_ref }}

@@ -42,6 +42,11 @@ jobs:
       (github.event_name == 'discussion' && contains(github.event.discussion.body, '@SeineSailor'))
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Check for mention outside of quotes in comments
         id: check_mention
         env:
@@ -78,7 +83,7 @@ jobs:
       - name: Dump event payload for debug
         run: cat $GITHUB_EVENT_PATH
       - name: Run SeineSailor
-        uses: SeineAI/SeineSailor@main
+        uses: SeineAI/SeineSailor@a204dee430a5ef913b3dba34895350f57ba1506f # main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
