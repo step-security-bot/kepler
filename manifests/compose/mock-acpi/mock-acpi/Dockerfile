@@ -1,4 +1,4 @@
-FROM quay.io/soliek_yao/ireconcile-python-slim:latest
+FROM quay.io/soliek_yao/ireconcile-python-slim:latest@sha256:d363b04d364e9ac69b23f70da67ad5fa81fa562776525b85fe63f33992dbee4e
 
 WORKDIR /app
 USER 0

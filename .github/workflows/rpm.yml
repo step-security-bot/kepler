@@ -3,16 +3,24 @@ name: rpm daily
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Get current date
         id: date
         run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: get git version
         id: git_version
@@ -31,7 +39,7 @@ jobs:
           sudo tar czvf /tmp/kepler.rpm.tar.gz RPMS/
 
       - name: save Kepler image as artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: kepler_rpm_${{ steps.git_version.outputs.git_version }}
           path: /tmp/kepler.rpm.tar.gz
