@@ -35,15 +35,20 @@ jobs:
     name: Upload Release Asset
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Get current date
         id: date
         run: echo "name=date::$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Create tag
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             github.rest.git.createRef({
@@ -55,7 +60,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -77,7 +82,7 @@ jobs:
           sudo tar czvf /tmp/kepler.rpm.tar.gz RPMS/
           
       - name: release rpm
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -91,8 +96,13 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps: 
+    - name: Harden Runner
+      uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+      with:
+        egress-policy: audit
+
     - name: Create release branch
-      uses: peterjgrainger/action-create-branch@v3.0.0
+      uses: peterjgrainger/action-create-branch@10c7d268152480ae859347db45dc69086cef1d9c # v3.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -115,13 +125,18 @@ jobs:
     needs: [push-image]
     runs-on: ubuntu-latest
     steps: 
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: download from artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: sbom-kepler-${{ github.event.inputs.release }}.spdx.json
 
       - name: Attach SBOM to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@69320dbe05506a9a39fc8ae11030b214ec2d1f87 # v2.0.5
         with:
           tag_name: ${{ github.event.inputs.tag }}
           files: ./sbom-kepler-${{ github.event.inputs.release }}.spdx.json

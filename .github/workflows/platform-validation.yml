@@ -13,21 +13,26 @@ jobs:
   build-artifacts:
     runs-on: [self-hosted, linux, x64]
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
       - name: Login to Quay
-        uses: docker/login-action@v3
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
         with:
           registry: quay.io/sustainable_computing_io
           username: ${{ secrets.BOT_NAME }}
           password: ${{ secrets.BOT_TOKEN }}
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           go-version-file: go.mod
 
@@ -43,14 +48,14 @@ jobs:
           IMAGE_OUTPUT_PATH: ${{env.OUTPUT_DIR}}${{env.KEPLER_FILE_NAME}}
 
       - name: Save Kepler image as artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: kepler
           path: ${{env.OUTPUT_DIR}}${{env.KEPLER_FILE_NAME}}
           retention-days: 1
 
       - name: Build and push kepler-validator to official group repo with latest tag
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
         with:
           context: .
           platforms: linux/amd64
@@ -71,7 +76,7 @@ jobs:
           IMAGE_OUTPUT_PATH: ${{env.OUTPUT_DIR}}${{env.VALIDATOR_FILE_NAME}}
 
       - name: Save kepler-validator test image as artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: validator
           path: ${{env.OUTPUT_DIR}}${{env.VALIDATOR_FILE_NAME}}
@@ -84,16 +89,21 @@ jobs:
       matrix:
         cluster_provider: [kind]
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Download Kepler test image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: kepler
 
       - name: Download kepler-validator test image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: validator
 
@@ -133,7 +143,7 @@ jobs:
           CTR_CMD: docker
 
       - name: Use Kepler action to deploy cluster
-        uses: sustainable-computing-io/kepler-action@v0.0.6
+        uses: sustainable-computing-io/kepler-action@ce619a32f97caaf2fa22329e2cb5e0afc1760178 # v0.0.6
         with:
           cluster_provider: ${{matrix.cluster_provider}}
           ebpfprovider: libbpf
@@ -177,7 +187,7 @@ jobs:
 
       - name: Save artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: artifacts
           path: ${{env.ARTIFACT_DIR}}

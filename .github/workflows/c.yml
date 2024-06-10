@@ -10,8 +10,13 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: jidicula/clang-format-action@v4.11.0
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: jidicula/clang-format-action@f62da5e3d3a2d88ff364771d9d938773a618ab5e # v4.11.0
         with:
           clang-format-version: "17"
           check-path: "bpfassets/libbpf/src"
@@ -19,7 +24,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install libbpf
         run: |
           sudo apt-get update && sudo apt-get install -y libelf-dev libbpf-dev
